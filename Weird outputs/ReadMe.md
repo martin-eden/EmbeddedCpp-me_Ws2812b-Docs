@@ -1,33 +1,27 @@
-# me_Ws2812b -- Send data to WS2812B LED stripe
+# Weird outputs
 
-Documentation for me_Ws2812b library.
+For some pins output is stuck to HIGH.
 
-# What
+I can't explain it from software point of view. Because code
+does not depend of pin (AVR GNU asm):
+```
+# Set pin LOW
+and %[PortValue], %[PortAndMask]
+st %a[PortAddress], %[PortValue]
+```
+(But it's duplicated for bit 0 and bit 1..)
 
-Arduino. AVR. ATmega329/P. 16 MHz. LED stripe. RGB. WS2812B. Function.
-C. Assembler. Standalone. GPL3.
+(Pin values are just bits in bytes.) This sticking to HIGH occurs when
+pin bit number is not 0. So on Uno it occurs for all pins except 0, 8
+and A0.
 
-Datasheet: Datasheets/RGB LED stripe - WS2812B.pdf
-
-# API
-
-Core
+Also it _does not_ occur when function is called with compile-time
+constant _Pin_ value.
 
 
-## Timings
-
-* _Ideally_ we want 1250 ns between any bits.
-* _Specification_ allows 1100 .. 1400 ns between bits.
-* _Implementation_ has 1620 ns between bits in separate bytes.
-* _Practically_ it works.
-* _Probably_ controller can tolerate LOW times up to 50 us timeout.
-
-* Interbit timings
-  * 0 -- Images/0.png
-    #. HIGH part -- Images/0.High.png
-    #. LOW part -- Images/0.Low.png
-  * 1 -- Images/1.png
-    #. HIGH part -- Images/1.High.png
-    #. LOW part -- Images/1.Low.png
-* Interbyte timings -- Images/Interbyte.png
-
+| What | Image |
+:-----:|:------:
+Normal | ![Normal](Normal.png)
+Weirdness 1 | ![Weird 1](Weird%201.png)
+Weirdness 2 | ![Weird 2](Weird%202.png)
+Weirdness 3 | ![Weird 3](Weird%203.png)
