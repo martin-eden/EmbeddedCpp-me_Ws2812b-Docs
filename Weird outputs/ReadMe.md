@@ -1,23 +1,23 @@
-# Weird outputs
+## Weird outputs
 
-For some pins output is stuck to HIGH.
+(2024-05)
 
-I can't explain it from software point of view. Because code
-does not depend of pin (AVR GNU asm):
-```
-# Set pin LOW
-and %[PortValue], %[PortAndMask]
-st %a[PortAddress], %[PortValue]
-```
-(But it's duplicated for bit 0 and bit 1..)
+There are some signal anomalies I cannot explain.
 
-(Pin values are just bits in bytes.) This sticking to HIGH occurs when
-pin bit number is not 0. So on Uno it occurs for all pins except 0, 8
-and A0.
+We're transferring bits by toggling pin.
 
-Also it _does not_ occur when function is called with compile-time
-constant _Pin_ value.
+Each bit is transferred in 1250 ns. First there is HIGH part, then LOW part.
+If HIGH part is 900 ns -- bit is 1, if 350 ns -- bit is 0.
 
+Still in some cases there is no LOW part for bit ones.
+
+This may occur when
+
+  1. Pin bit offset is not 0 (pin is not 0, 8 and A0)
+  2. Pin number is not compile-time constant (we're setting pin
+    number from serial data)
+
+I have no explanation for this. Below is observed cases.
 
 | What | Image |
 :-----:|:------:
